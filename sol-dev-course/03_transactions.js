@@ -45,11 +45,6 @@ const signature = await sendAndConfirmTransaction(
 // check at : https://explorer.solana.com/?cluster=devnet
 console.log(`\nTransaction Signature: ${signature}`)
 
-// await (async function() {
-//     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-//     await sleep(3000)
-// })()
-
 
 senderBal = await connection.getBalance(sender.publicKey);
 receiverBal = await connection.getBalance(receiver.publicKey);

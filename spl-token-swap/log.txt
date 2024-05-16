@@ -1,0 +1,66 @@
+Run test: createTokenSwap (constant price)
+tokenSwapAccount  :  Keypair {
+  _keypair: {
+    publicKey: Uint8Array(32) [
+      234,  71, 235, 254, 111, 190, 128, 180,
+       32, 171,  91, 109, 102, 184,  31, 141,
+       13, 176, 233, 226, 139, 222, 247,   9,
+       53,  61, 123,  11, 194,  42,  87,  22
+    ],
+    secretKey: Uint8Array(64) [
+       56, 169, 225,  17, 169, 140,  99, 204, 216,  41,  39,
+      188, 111,   6, 142, 129,  42,  66, 129,  27, 191,  75,
+      116,  39, 214,  36, 218,  36,  84,  67, 248, 165, 234,
+       71, 235, 254, 111, 190, 128, 180,  32, 171,  91, 109,
+      102, 184,  31, 141,  13, 176, 233, 226, 139, 222, 247,
+        9,  53,  61, 123,  11, 194,  42,  87,  22
+    ]
+  }
+}
+authority :  PublicKey [PublicKey(6sgX4iLK9TpKJMg2YN3xTzX1s75N7LeN3a3CriJrMBJZ)] {
+  _bn: <BN: 5746289b5d61746f16d8a4e45435d0244d6ea32570a28814b0ee9fa5f57407f2>
+}
+creating pool mint
+tokenPool :  PublicKey [PublicKey(8QBKuxW64isFuxSv3c5B49STMG1Lk1ZTBEsaFUww3NDK)] {
+  _bn: <BN: 6df1d7c42b9ba946b0e3edc533c6fd74c6aa9bae13eb82f64c6a3905aea3d0ee>
+} 
+
+tokenPool :  PublicKey [PublicKey(8QBKuxW64isFuxSv3c5B49STMG1Lk1ZTBEsaFUww3NDK)] {
+  _bn: <BN: 6df1d7c42b9ba946b0e3edc533c6fd74c6aa9bae13eb82f64c6a3905aea3d0ee>
+} 
+
+creating pool account
+creating pool account
+tokenAccountPool :  PublicKey [PublicKey(7y4t49Qxjd3rFP5kpn6jrEKiq8ARqDv6LJTPVLsQeEQ8)] {
+  _bn: <BN: 678308c627e8d8479d0b6ae7cdefa6a220ff0f5b7cb7122a63d0515bbe58e049>
+}
+feeAccount :  PublicKey [PublicKey(GaHuRTeyJMkVHuxrwBjy6gzWQS7dsABhuerHaMsnHF9k)] {
+  _bn: <BN: e7669574714daf72043793044c56348b16637ae93c098bbe91c22edd06887703>
+}
+
+
+creating token A
+mintA :  PublicKey [PublicKey(7dtPGS81GWYd8VNMGVnBeLWuj9bYiN95P8edqcSAN7VB)] {
+  _bn: <BN: 62992171dbc447d4d877d1a4ab6ffcd96270afe8e9b7850f6c3f4383fc459172>
+}
+getting token A account
+tokenAccountA :  PublicKey [PublicKey(D8aCgSM8h41UDWFREdHqKRG8uUaGowpMFcRs9ceXi339)] {
+  _bn: <BN: b43cd985cf39932d93eef9a4bd32e2e0c52a6289f02270278011e5a6b31f5fec>
+}
+tokenAccountA :  PublicKey [PublicKey(D8aCgSM8h41UDWFREdHqKRG8uUaGowpMFcRs9ceXi339)] {
+  _bn: <BN: b43cd985cf39932d93eef9a4bd32e2e0c52a6289f02270278011e5a6b31f5fec>
+}
+minting token A to swap
+creating token B
+mintB :  PublicKey [PublicKey(BwPBiYuzgHpLnhcGcfzv2rcQDsHngdupAKZNGY7tDix3)] {
+  _bn: <BN: a283513db11c26519ba65dcc35da959778b5c00867372e49d973519028a8914c>
+}
+creating token B account
+tokenAccountB :  PublicKey [PublicKey(H2NW6TEKHYBR6pFZGPwFzDLgLwyw7Rfcz55DrWmtRdp3)] {
+  _bn: <BN: ee14e23301ee325dfeb6588a6d1edca985516abc6e336f82b46e62fa577bdce8>
+}
+minting token B to swap
+creating token swap
+swapPayer :  PublicKey [PublicKey(GtPsTn5zQ2VU9Yqj9QQvYh7fuKRQwbf5jnJhQhyPtVuU)] {
+  _bn: <BN: ec09c8cd46d116facd178adf0c01ae0e91b399c6650f4dbfda105cd010a35dab>
+}
