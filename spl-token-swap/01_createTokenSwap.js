@@ -10,12 +10,8 @@ import {
       Connection,
       clusterApiUrl,
       PublicKey,
-      SystemProgram,
-      Transaction,
-      sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import {
-      approve,
       createMint,
       createAccount,
       createApproveInstruction,
@@ -53,37 +49,12 @@ import {
 } from './99_utils.js'
 import bs58 from 'bs58';
 
-// const TOKEN_SWAP_PROGRAM_ID= OLD_TOKEN_SWAP_PROGRAM_ID
-let tokenSwap;
-// authority of the token and accounts
-let authority;
-// bump seed used to generate the authority public key
-let bumpSeed;
-// owner of the user accounts
-let owner;
-// payer for transactions
-let payer;
-// Token pool
-let tokenPool;
-let tokenAccountPool;
-let feeAccount;
-// Tokens swapped
-let mintA;
-const mintAProgramId = TOKEN_PROGRAM_ID;
-let mintB;
-const mintBProgramId = TOKEN_PROGRAM_ID;
-let tokenAccountA;
-let tokenAccountB;
-
-
-
-console.log('Run test: createTokenSwap (constant price)');
-const constantPrice = new Uint8Array(8);
-constantPrice[0] = 1;
-await createTokenSwap(CurveType.ConstantProduct, undefined, true, true);
-
-
-
+const main = async () => {
+      console.log('Run test: createTokenSwap (constant price)');
+      const constantPrice = new Uint8Array(8);
+      constantPrice[0] = 1;
+      await createTokenSwap(CurveType.ConstantProduct, undefined, true, true);
+}
 
 async function createTokenSwap(
       curveType,
@@ -92,8 +63,8 @@ async function createTokenSwap(
       skipMint = true
 ) {
       const connection = new Connection(clusterApiUrl("devnet"));
-      payer = getKeypairFromEnvironment("SECRET_KEY");
-      owner = getKeypairFromEnvironment("OWNER_SECRET_KEY");
+      let payer = getKeypairFromEnvironment("SECRET_KEY");
+      let owner = getKeypairFromEnvironment("OWNER_SECRET_KEY");
       let tokenSwapAccount
       if (skipCreate) {
             tokenSwapAccount = getKeypairFromEnvironment("TOKEN_SWAP_ACCOUNT_SECRET_KEY");
@@ -102,7 +73,7 @@ async function createTokenSwap(
             tokenSwapAccount = Keypair.generate();
       }
 
-      [authority, bumpSeed] = await PublicKey.findProgramAddress(
+      let [authority, bumpSeed] = await PublicKey.findProgramAddress(
             [tokenSwapAccount.publicKey.toBuffer()],
             TOKEN_SWAP_PROGRAM_ID,
       ); sleep(100);
@@ -110,7 +81,9 @@ async function createTokenSwap(
       console.log("tokenSwapAccount  : ", tokenSwapAccount.publicKey.toBase58())
       console.log("authority : ", authority)
 
-
+      let tokenPool
+      let tokenAccountPool;
+      let feeAccount;
       if (skipCreate) {
             console.log("getting pool infos")
             tokenPool = new PublicKey(process.env.TOKEN_POOL_MINT_ADDRESS)
@@ -156,8 +129,9 @@ async function createTokenSwap(
       console.log("tokenAccountPool : ", tokenAccountPool)
       console.log("feeAccount : ", feeAccount)
 
-      console.log('\n\ncreating token A');
-
+      let mintA;
+      let tokenAccountA;
+      const mintAProgramId = TOKEN_PROGRAM_ID;
       if (skipCreate) {
             console.log('getting token A account');
 
@@ -211,12 +185,16 @@ async function createTokenSwap(
       console.log("tokenAccountA : ", tokenAccountA)
 
 
+      let mintB;
+      let tokenAccountB;
+      const mintBProgramId = TOKEN_PROGRAM_ID;
       if (skipCreate) {
+            console.log('getting token B infos'); 
+
             mintB = (await getMint(
                   connection,
                   new PublicKey(process.env.TOKEN_B_ADDRESS)
             )).address
-            console.log('getting token B infos'); sleep(500)
             tokenAccountB = (await getAccount(
                   connection,
                   new PublicKey(process.env.TOKEN_B_ACCOUNT),
@@ -225,7 +203,7 @@ async function createTokenSwap(
             )).address
       }
       else {
-            console.log('creating token B');
+            console.log('creating token B'); sleep(500)
             mintB = await createMint(
                   connection,
                   payer,
@@ -250,9 +228,6 @@ async function createTokenSwap(
       console.log("mintB : ", mintB)
       console.log("tokenAccountB : ", tokenAccountB)
 
-
-
-
       if (!skipMint) {
             sleep(500)
             console.log('minting token B to swap');
@@ -270,6 +245,7 @@ async function createTokenSwap(
       console.log('creating token swap');
       const swapPayer = getKeypairFromEnvironment("SWAP_PAYER_SECRET_KEY");
       console.log("swapPayer : ", swapPayer.publicKey)
+      let tokenSwap;
       if (!skipCreate) {
             tokenSwap = await TokenSwap.createTokenSwap(
                   connection,
@@ -333,3 +309,5 @@ async function createTokenSwap(
       assert(HOST_FEE_DENOMINATOR == fetchedTokenSwap.hostFeeDenominator);
       assert(curveType == fetchedTokenSwap.curveType);
 }
+
+main()
