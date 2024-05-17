@@ -4,7 +4,12 @@
 
 import "dotenv/config"
 import { getKeypairFromEnvironment } from "@solana-developers/helpers";
-import { TokenSwap, CurveType, TOKEN_SWAP_PROGRAM_ID, OLD_TOKEN_SWAP_PROGRAM_ID } from '@solana/spl-token-swap';
+import {
+      TokenSwap,
+      CurveType,
+      TOKEN_SWAP_PROGRAM_ID,
+      OLD_TOKEN_SWAP_PROGRAM_ID,
+} from '@solana/spl-token-swap';
 import {
       Keypair,
       Connection,
@@ -27,12 +32,15 @@ import {
       mintTo,
       AccountLayout,
       TOKEN_PROGRAM_ID,
+      getAccountLenForMint,
+      createMintToInstruction,
+
 } from '@solana/spl-token';
 import { assert, sleep } from "./99_utils.js";
 import {
-      currentSwapTokenA ,
-      currentSwapTokenB ,
-      POOL_TOKEN_AMOUNT 
+      currentSwapTokenA,
+      currentSwapTokenB,
+      POOL_TOKEN_AMOUNT
 } from './99_utils.js'
 
 
@@ -78,9 +86,15 @@ export async function depositAllTokenTypes() {
       const poolMintInfo = await getMint(connection, tokenPool);
       const supply = poolMintInfo.supply;
       const swapTokenA = await getAccount(connection, tokenAccountA);
-      const tokenA = (swapTokenA.amount * BigInt(POOL_TOKEN_AMOUNT)) / supply;
+      const tokenA = swapTokenA.amount;
       const swapTokenB = await getAccount(connection, tokenAccountB);
-      const tokenB = (swapTokenB.amount * BigInt(POOL_TOKEN_AMOUNT)) / supply;
+      const tokenB = swapTokenB.amount;
+
+      console.log("poolMintInfo : ", poolMintInfo)
+      console.log("swapTokenA : ", swapTokenA)
+      console.log("swapTokenB : ", swapTokenB)
+      console.log("tokenA : ", tokenA)
+      console.log("tokenB : ", tokenB)
 
       let tokenSwap = await TokenSwap.loadTokenSwap(
             connection,
@@ -91,42 +105,151 @@ export async function depositAllTokenTypes() {
       console.log("tokenSwap : ", tokenSwap)
       console.log("pool mint info : ", poolMintInfo)
 
-
+      
       const userTransferAuthority = Keypair.generate();
       console.log('Creating depositor token a account');
-      const userAccountA = await createAccount(
-            connection,
-            payer,
-            mintA,
-            owner.publicKey,
-            Keypair.generate(),
+      let transaction = new Transaction();
+
+      // const userAccountA = await createAccount(
+      //       connection,
+      //       payer,
+      //       mintA,
+      //       owner.publicKey,
+      //       Keypair.generate(),
+      // ); 
+
+      // userAccount 생성 하는 과정
+      const userAccountA = Keypair.generate();
+      console.log("userAccountA : ", userAccountA.publicKey.toBase58())
+      const mintState = await getMint(connection, mintA, null, TOKEN_PROGRAM_ID);
+      const space = getAccountLenForMint(mintState);
+      const lamports = await connection.getMinimumBalanceForRentExemption(space);
+      sleep(100);
+
+      transaction.add(
+            SystemProgram.createAccount({
+                  fromPubkey: payer.publicKey,
+                  newAccountPubkey: userAccountA.publicKey,
+                  space,
+                  lamports,
+                  programId: TOKEN_PROGRAM_ID,
+            }),
+            createInitializeAccountInstruction(
+                  userAccountA.publicKey, 
+                  mintA, 
+                  owner.publicKey, 
+                  TOKEN_PROGRAM_ID
+            )
       );
-      await mintTo(connection, payer, mintA, userAccountA, owner, tokenA);
-      await approve(
-            connection,
-            payer,
-            userAccountA,
-            userTransferAuthority.publicKey,
-            owner,
-            tokenA,
+
+
+      // await mintTo(connection, payer, mintA, userAccountA, owner, tokenA);
+      // await approve(
+      //       connection,
+      //       payer,
+      //       userAccountA,
+      //       userTransferAuthority.publicKey,
+      //       owner,
+      //       tokenA,
+      // );
+      transaction.add(
+            createMintToInstruction(
+                  mintA,
+                  userAccountA.publicKey,
+                  owner.publicKey,
+                  tokenA,
+                  [],
+                  TOKEN_PROGRAM_ID
+            ),
+            createApproveInstruction(
+                  userAccountA.publicKey,
+                  userTransferAuthority.publicKey,
+                  owner.publicKey,
+                  tokenA,
+                  [],
+                  TOKEN_PROGRAM_ID
+            )
       );
+
+      // https://explorer.solana.com/tx/4eEa4zUbTQ7fyXqjnu5xt2EGbCvbhB3b9a5atBdqgvSKb9co75dtCPfN4UQEEjVv3CekJkHbMEywz7cjUc9Z1i9w?cluster=devnet
+      sleep(500);
+      let signature = await sendAndConfirmTransaction(
+            connection, 
+            transaction, 
+            [payer, userAccountA, owner], 
+            { skipPreflight: true }
+      );
+      console.log("A signature : ", signature)
+
       console.log('Creating depositor token b account');
-      const userAccountB = await createAccount(
-            connection,
-            payer,
-            mintB,
-            owner.publicKey,
-            Keypair.generate(),
+      transaction = new Transaction();
+      // const userAccountB = await createAccount(
+      //       connection,
+      //       payer,
+      //       mintB,
+      //       owner.publicKey,
+      //       Keypair.generate(),
+      // );
+      const userAccountB = Keypair.generate();
+      console.log("userAccountA : ", userAccountA.publicKey.toBase58())
+      const mintStateB = await getMint(connection, mintA, null, TOKEN_PROGRAM_ID);
+      const spaceB = getAccountLenForMint(mintStateB);
+      const lamportsB = await connection.getMinimumBalanceForRentExemption(spaceB);
+
+      transaction.add(
+            SystemProgram.createAccount({
+                  fromPubkey: payer.publicKey,
+                  newAccountPubkey: userAccountB.publicKey,
+                  spaceB,
+                  lamportsB,
+                  programId: TOKEN_PROGRAM_ID,
+            }),
+            createInitializeAccountInstruction(
+                  userAccountB.publicKey, 
+                  mintB, 
+                  owner.publicKey, 
+                  TOKEN_PROGRAM_ID
+            )
       );
-      await mintTo(connection, payer, mintB, userAccountB, owner, tokenB);
-      await approve(
-            connection,
-            payer,
-            userAccountB,
-            userTransferAuthority.publicKey,
-            owner,
-            tokenB,
+
+
+      // await mintTo(connection, payer, mintB, userAccountB, owner, tokenB);
+      // await approve(
+      //       connection,
+      //       payer,
+      //       userAccountB,
+      //       userTransferAuthority.publicKey,
+      //       owner,
+      //       tokenB,
+      // );
+      transaction.add(
+            createMintToInstruction(
+                  mintB,
+                  userAccountB.publicKey,
+                  owner.publicKey,
+                  tokenB,
+                  [],
+                  TOKEN_PROGRAM_ID
+            ),
+            createApproveInstruction(
+                  userAccountB.publicKey,
+                  userTransferAuthority.publicKey,
+                  owner.publicKey,
+                  tokenB,
+                  [],
+                  TOKEN_PROGRAM_ID
+            )
       );
+      sleep(50);
+      await sendAndConfirmTransaction(
+            connection,
+            transaction,
+            [payer, userAccountA, owner],
+            { skipPreflight: true }
+      );
+
+
+
       console.log('Creating depositor pool token account');
       const newAccountPool = await createAccount(
             connection,
@@ -160,6 +283,8 @@ export async function depositAllTokenTypes() {
             TOKEN_SWAP_PROGRAM_ID,
             swapPayer,
       );
+      console.log('\n\n ======= after deposit =======')
+      console.log("tokenSwap : ", tokenSwap)
 
       let info;
       info = await getAccount(connection, userAccountA);

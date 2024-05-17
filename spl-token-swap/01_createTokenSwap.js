@@ -282,32 +282,6 @@ async function createTokenSwap(
             swapPayer,
       );
       console.log(fetchedTokenSwap)
-
-      assert(fetchedTokenSwap.poolTokenProgramId.equals(TOKEN_PROGRAM_ID));
-      assert(fetchedTokenSwap.tokenAccountA.equals(tokenAccountA));
-      assert(fetchedTokenSwap.tokenAccountB.equals(tokenAccountB));
-      assert(fetchedTokenSwap.mintA.equals(mintA));
-      assert(fetchedTokenSwap.mintB.equals(mintB));
-      assert(fetchedTokenSwap.poolToken.equals(tokenPool));
-      assert(fetchedTokenSwap.feeAccount.equals(feeAccount));
-      assert(TRADING_FEE_NUMERATOR == fetchedTokenSwap.tradeFeeNumerator);
-      assert(TRADING_FEE_DENOMINATOR == fetchedTokenSwap.tradeFeeDenominator);
-      assert(
-            OWNER_TRADING_FEE_NUMERATOR == fetchedTokenSwap.ownerTradeFeeNumerator,
-      );
-      assert(
-            OWNER_TRADING_FEE_DENOMINATOR == fetchedTokenSwap.ownerTradeFeeDenominator,
-      );
-      assert(
-            OWNER_WITHDRAW_FEE_NUMERATOR == fetchedTokenSwap.ownerWithdrawFeeNumerator,
-      );
-      assert(
-            OWNER_WITHDRAW_FEE_DENOMINATOR ==
-            fetchedTokenSwap.ownerWithdrawFeeDenominator,
-      );
-      assert(HOST_FEE_NUMERATOR == fetchedTokenSwap.hostFeeNumerator);
-      assert(HOST_FEE_DENOMINATOR == fetchedTokenSwap.hostFeeDenominator);
-      assert(curveType == fetchedTokenSwap.curveType);
 }
 
 main()

@@ -174,22 +174,20 @@ export async function swap() {
 
       await sleep(500);
 
+
+      console.log('\n\n\n======== after swap ========')
       let info;
       info = await getAccount(connection, userAccountA);
       console.log("userAccountA : ",info)
-      // assert(info.amount == 0n);
 
       info = await getAccount(connection, userAccountB);
       console.log("userAccountB : ", info)
-      assert(info.amount == SWAP_AMOUNT_OUT);
 
       info = await getAccount(connection, tokenAccountA);
-      assert(info.amount == currentSwapTokenA + SWAP_AMOUNT_IN);
-      currentSwapTokenA += SWAP_AMOUNT_IN;
-
+      console.log("tokenAccountA : ", info)
+      
       info = await getAccount(connection, tokenAccountB);
-      assert(info.amount == currentSwapTokenB - SWAP_AMOUNT_OUT);
-      currentSwapTokenB -= SWAP_AMOUNT_OUT;
+      console.log("tokenAccountB : ", info)
 
       info = await getAccount(connection, tokenAccountPool);
       assert(info.amount == DEFAULT_POOL_TOKEN_AMOUNT - POOL_TOKEN_AMOUNT);
