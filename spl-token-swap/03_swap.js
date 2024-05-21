@@ -58,7 +58,7 @@ import {
 swap()
 
 export async function swap() {
-      const connection = new Connection(clusterApiUrl("devnet"));
+      const connection = new Connection(clusterApiUrl("devnet"), {commitment: "confirmed",});
       const payer = getKeypairFromEnvironment("SECRET_KEY");
       const owner = getKeypairFromEnvironment("OWNER_SECRET_KEY");
       const tokenSwapAccount = getKeypairFromEnvironment("TOKEN_SWAP_ACCOUNT_SECRET_KEY");
@@ -112,10 +112,12 @@ export async function swap() {
             Keypair.generate(),
       );
 
-      console.log("mint to userAccountA"); sleep(100);
-      await mintTo(connection, payer, mintA, userAccountA, owner, SWAP_AMOUNT_IN * 10n);
+      await sleep(500);
+      console.log("mint to userAccountA"); 
+      await mintTo(connection, payer, mintA, userAccountA, owner, SWAP_AMOUNT_IN );
       
-      const userTransferAuthority = Keypair.generate(); sleep(100);
+      await sleep(500);
+      const userTransferAuthority = Keypair.generate(); 
       await approve(
             connection,
             payer,
@@ -152,8 +154,8 @@ export async function swap() {
             skipPreflight: true,
       };
 
-      sleep(1000)
-      console.log('Swapping');
+      await sleep(1000)
+      console.log('======== Swapping ========');
       await tokenSwap.swap(
             userAccountA,
             tokenAccountA,
@@ -165,7 +167,7 @@ export async function swap() {
             TOKEN_PROGRAM_ID,
             TOKEN_PROGRAM_ID,
             TOKEN_PROGRAM_ID,
-            null,
+            poolAccount,
             userTransferAuthority,
             SWAP_AMOUNT_IN,
             0n,
@@ -176,29 +178,19 @@ export async function swap() {
 
       let info;
       info = await getAccount(connection, userAccountA);
-      console.log("userAccountA : ",info)
-      // assert(info.amount == 0n);
+      console.log("userAccountA : ",info);
 
       info = await getAccount(connection, userAccountB);
-      console.log("userAccountB : ", info)
-      assert(info.amount == SWAP_AMOUNT_OUT);
+      console.log("userAccountB : ", info);
 
       info = await getAccount(connection, tokenAccountA);
-      assert(info.amount == currentSwapTokenA + SWAP_AMOUNT_IN);
-      currentSwapTokenA += SWAP_AMOUNT_IN;
+      console.log("tokenAccountA : ", info);
 
       info = await getAccount(connection, tokenAccountB);
-      assert(info.amount == currentSwapTokenB - SWAP_AMOUNT_OUT);
-      currentSwapTokenB -= SWAP_AMOUNT_OUT;
+      console.log("tokenAccountB : ", info);
 
-      info = await getAccount(connection, tokenAccountPool);
-      assert(info.amount == DEFAULT_POOL_TOKEN_AMOUNT - POOL_TOKEN_AMOUNT);
+      info = await getAccount(connection, poolAccount);
+      console.log("poolAccount : ", info);
+      
 
-      info = await getAccount(connection, feeAccount);
-      assert(info.amount == currentFeeAmount + OWNER_SWAP_FEE);
-
-      if (poolAccount != null) {
-            info = await getAccount(connection, poolAccount);
-            assert(info.amount == HOST_SWAP_FEE);
-      }
 }

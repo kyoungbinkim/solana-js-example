@@ -28,7 +28,7 @@ export function assert(condition, message) {
 }
 
 
-export function sleep(ms) {
+export async function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -55,14 +55,14 @@ export const HOST_FEE_NUMERATOR = 20n;
 export const HOST_FEE_DENOMINATOR = 100n;
 
 // Initial amount in each swap token
-export let currentSwapTokenA = 1000000n;
+export let currentSwapTokenA = 10000000n;
 export let currentSwapTokenB = 1000000n;
 export let currentFeeAmount = 0n;
 
 // Swap instruction constants
 // Because there is no withdraw fee in the production version, these numbers
 // need to get slightly tweaked in the two cases.
-export const SWAP_AMOUNT_IN = 1000n;
+export const SWAP_AMOUNT_IN = 5000n;
 export const SWAP_AMOUNT_OUT = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 90661n : 90674n;
 export const SWAP_FEE = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 22727n : 22730n;
 export const HOST_SWAP_FEE = SWAP_PROGRAM_OWNER_FEE_ADDRESS
@@ -74,27 +74,4 @@ export const OWNER_SWAP_FEE = SWAP_FEE - HOST_SWAP_FEE;
 export const DEFAULT_POOL_TOKEN_AMOUNT = 1000000000n;
 // Pool token amount to withdraw / deposit
 export const POOL_TOKEN_AMOUNT = 10000000n;
-
-//TODO refactor code
-export default {
-      "SWAP_PROGRAM_OWNER_FEE_ADDRESS": process.env.SWAP_PROGRAM_OWNER_FEE_ADDRESS,
-      "TRADING_FEE_NUMERATOR": 25n,
-      "TRADING_FEE_DENOMINATOR": 10000n,
-      "OWNER_TRADING_FEE_NUMERATOR": 5n,
-      'OWNER_TRADING_FEE_DENOMINATOR': 10000n,
-      'OWNER_WITHDRAW_FEE_NUMERATOR': OWNER_WITHDRAW_FEE_NUMERATOR,
-      'OWNER_WITHDRAW_FEE_DENOMINATOR': OWNER_WITHDRAW_FEE_DENOMINATOR,
-      'HOST_FEE_NUMERATOR': HOST_FEE_NUMERATOR,
-      'HOST_FEE_DENOMINATOR': HOST_FEE_DENOMINATOR,
-      'currentSwapTokenA': currentSwapTokenA,
-      'currentSwapTokenB': currentSwapTokenB,
-      'currentFeeAmount': currentFeeAmount,
-      'SWAP_AMOUNT_IN': SWAP_AMOUNT_IN,
-      'SWAP_AMOUNT_OUT': SWAP_AMOUNT_OUT,
-      'SWAP_FEE': SWAP_FEE,
-      'HOST_SWAP_FEE': HOST_SWAP_FEE,
-      'OWNER_SWAP_FEE': OWNER_SWAP_FEE,
-      'DEFAULT_POOL_TOKEN_AMOUNT': DEFAULT_POOL_TOKEN_AMOUNT,
-      'POOL_TOKEN_AMOUNT': POOL_TOKEN_AMOUNT
-}
 

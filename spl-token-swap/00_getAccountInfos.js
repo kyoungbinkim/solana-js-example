@@ -12,12 +12,13 @@ import {
       getMinimumBalanceForRentExemptAccount,
       TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
-import { printLog } from "./99_utils.js";
+import { OWNER_SWAP_FEE, printLog } from "./99_utils.js";
+import base58 from "bs58";
 
 accountInfos()
 
 async function accountInfos() {
-      const connection = new Connection(clusterApiUrl("devnet"));
+      const connection = new Connection(clusterApiUrl("devnet"), {commitment: "confirmed",});
       const payer = getKeypairFromEnvironment("SECRET_KEY");
       const owner = getKeypairFromEnvironment("OWNER_SECRET_KEY");
       const swapPayer = getKeypairFromEnvironment("SWAP_PAYER_SECRET_KEY");
@@ -69,10 +70,15 @@ async function accountInfos() {
       );
 
       printLog(payer, 'payer')
-      printLog(owner, 'owner')
+
+      printLog(base58.encode(owner.secretKey), 'owner secret key')
       printLog(owner.publicKey.toBase58(), "owner pubkey")
-      printLog(swapPayer, 'swapPayer')
+      printLog(await connection.getBalance(owner.publicKey), "owner balance")
+
+      printLog(base58.encode(swapPayer.secretKey), 'swapPayer secret key')
       printLog(swapPayer.publicKey.toBase58(), "swapPayer pubkey")
+      printLog(await connection.getBalance(swapPayer.publicKey), "swapPayer balance")
+
       printLog(tokenSwapAccount, 'tokenSwapAccount')
       printLog(tokenPool, 'tokenPool')
       printLog(tokenAccountPool,'tokenAccountPool'),
@@ -82,5 +88,7 @@ async function accountInfos() {
       printLog(mintB, 'mintB')
       printLog(tokenAccountB, 'tokenAccountB')
       printLog(fetchedTokenSwap, "tokenSwap")
+
+      printLog(OWNER_SWAP_FEE,"OWNER_SWAP_FEE")
 }
 

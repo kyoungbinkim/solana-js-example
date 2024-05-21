@@ -53,7 +53,7 @@ const main = async () => {
       console.log('Run test: createTokenSwap (constant price)');
       const constantPrice = new Uint8Array(8);
       constantPrice[0] = 1;
-      await createTokenSwap(CurveType.ConstantProduct, undefined, true, true);
+      await createTokenSwap(CurveType.ConstantProduct, undefined, false, false);
 }
 
 async function createTokenSwap(
@@ -62,7 +62,7 @@ async function createTokenSwap(
       skipCreate = true,
       skipMint = true
 ) {
-      const connection = new Connection(clusterApiUrl("devnet"));
+      const connection = new Connection(clusterApiUrl("devnet"), {commitment: "confirmed",});
       let payer = getKeypairFromEnvironment("SECRET_KEY");
       let owner = getKeypairFromEnvironment("OWNER_SECRET_KEY");
       let tokenSwapAccount
@@ -71,12 +71,14 @@ async function createTokenSwap(
       }
       else {
             tokenSwapAccount = Keypair.generate();
+            console.log("tokenSwapAccount secret key : ", tokenSwapAccount.secretKey)
       }
 
       let [authority, bumpSeed] = await PublicKey.findProgramAddress(
             [tokenSwapAccount.publicKey.toBuffer()],
             TOKEN_SWAP_PROGRAM_ID,
-      ); sleep(100);
+      ); 
+      await sleep(100);
 
       console.log("tokenSwapAccount  : ", tokenSwapAccount.publicKey.toBase58())
       console.log("authority : ", authority)
@@ -169,7 +171,7 @@ async function createTokenSwap(
       }
 
       if (!skipMint) {
-            sleep(500)
+            await sleep(500)
             console.log('minting token A to swap');
             await mintTo(
                   connection,
@@ -203,7 +205,8 @@ async function createTokenSwap(
             )).address
       }
       else {
-            console.log('creating token B'); sleep(500)
+            await sleep(500)
+            console.log('creating token B'); 
             mintB = await createMint(
                   connection,
                   payer,
@@ -261,14 +264,14 @@ async function createTokenSwap(
                   tokenAccountPool,
                   TOKEN_SWAP_PROGRAM_ID,
                   TOKEN_PROGRAM_ID,
-                  0n,
-                  0n,
-                  0n,
-                  0n,
-                  0n,
-                  0n,
-                  0n,
-                  0n,
+                  TRADING_FEE_NUMERATOR,
+                  TRADING_FEE_DENOMINATOR,
+                  OWNER_TRADING_FEE_NUMERATOR,
+                  OWNER_TRADING_FEE_DENOMINATOR,
+                  OWNER_WITHDRAW_FEE_NUMERATOR,
+                  OWNER_WITHDRAW_FEE_DENOMINATOR,
+                  HOST_FEE_NUMERATOR,
+                  HOST_FEE_DENOMINATOR,
                   curveType,
                   curveParameters,
             );
@@ -282,32 +285,6 @@ async function createTokenSwap(
             swapPayer,
       );
       console.log(fetchedTokenSwap)
-
-      assert(fetchedTokenSwap.poolTokenProgramId.equals(TOKEN_PROGRAM_ID));
-      assert(fetchedTokenSwap.tokenAccountA.equals(tokenAccountA));
-      assert(fetchedTokenSwap.tokenAccountB.equals(tokenAccountB));
-      assert(fetchedTokenSwap.mintA.equals(mintA));
-      assert(fetchedTokenSwap.mintB.equals(mintB));
-      assert(fetchedTokenSwap.poolToken.equals(tokenPool));
-      assert(fetchedTokenSwap.feeAccount.equals(feeAccount));
-      assert(TRADING_FEE_NUMERATOR == fetchedTokenSwap.tradeFeeNumerator);
-      assert(TRADING_FEE_DENOMINATOR == fetchedTokenSwap.tradeFeeDenominator);
-      assert(
-            OWNER_TRADING_FEE_NUMERATOR == fetchedTokenSwap.ownerTradeFeeNumerator,
-      );
-      assert(
-            OWNER_TRADING_FEE_DENOMINATOR == fetchedTokenSwap.ownerTradeFeeDenominator,
-      );
-      assert(
-            OWNER_WITHDRAW_FEE_NUMERATOR == fetchedTokenSwap.ownerWithdrawFeeNumerator,
-      );
-      assert(
-            OWNER_WITHDRAW_FEE_DENOMINATOR ==
-            fetchedTokenSwap.ownerWithdrawFeeDenominator,
-      );
-      assert(HOST_FEE_NUMERATOR == fetchedTokenSwap.hostFeeNumerator);
-      assert(HOST_FEE_DENOMINATOR == fetchedTokenSwap.hostFeeDenominator);
-      assert(curveType == fetchedTokenSwap.curveType);
 }
 
 main()

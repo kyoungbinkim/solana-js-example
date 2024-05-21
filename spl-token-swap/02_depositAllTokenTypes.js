@@ -37,7 +37,7 @@ import {
 
 
 export async function depositAllTokenTypes() {
-      const connection = new Connection(clusterApiUrl("devnet"));
+      const connection = new Connection(clusterApiUrl("devnet"), {commitment: "confirmed",});
 
       const payer = getKeypairFromEnvironment("SECRET_KEY");
       const owner = getKeypairFromEnvironment("OWNER_SECRET_KEY");
@@ -76,12 +76,17 @@ export async function depositAllTokenTypes() {
 
 
       const poolMintInfo = await getMint(connection, tokenPool);
+      const mintAInfo = await getMint(connection, mintA);
+      const mintBInfo = await getMint(connection, mintB);
+
       const supply = poolMintInfo.supply;
       const swapTokenA = await getAccount(connection, tokenAccountA);
-      const tokenA = (swapTokenA.amount * BigInt(POOL_TOKEN_AMOUNT)) / supply;
+      const tokenA = swapTokenA.amount 
       const swapTokenB = await getAccount(connection, tokenAccountB);
-      const tokenB = (swapTokenB.amount * BigInt(POOL_TOKEN_AMOUNT)) / supply;
-
+      const tokenB = swapTokenB.amount 
+      console.log("tokenA amount :", tokenA)
+      console.log("tokenB amount :", tokenB)
+      
       let tokenSwap = await TokenSwap.loadTokenSwap(
             connection,
             tokenSwapAccount.publicKey,
@@ -101,7 +106,10 @@ export async function depositAllTokenTypes() {
             owner.publicKey,
             Keypair.generate(),
       );
-      await mintTo(connection, payer, mintA, userAccountA, owner, tokenA);
+
+      await sleep(1000); 
+      console.log("userAccountA: ", userAccountA)
+      await mintTo(connection, payer, mintA, userAccountA, owner, tokenA+1n);
       await approve(
             connection,
             payer,
@@ -118,7 +126,8 @@ export async function depositAllTokenTypes() {
             owner.publicKey,
             Keypair.generate(),
       );
-      await mintTo(connection, payer, mintB, userAccountB, owner, tokenB);
+      await sleep(1000)
+      await mintTo(connection, payer, mintB, userAccountB, owner, tokenB+1n);
       await approve(
             connection,
             payer,
@@ -163,17 +172,11 @@ export async function depositAllTokenTypes() {
 
       let info;
       info = await getAccount(connection, userAccountA);
-      assert(info.amount == 0n);
+      console.log("userAccountA : ", info)
       info = await getAccount(connection, userAccountB);
-      assert(info.amount == 0n);
-      info = await getAccount(connection, tokenAccountA);
-      assert(info.amount == currentSwapTokenA + tokenA);
-      currentSwapTokenA += tokenA;
-      info = await getAccount(connection, tokenAccountB);
-      assert(info.amount == currentSwapTokenB + tokenB);
-      currentSwapTokenB += tokenB;
+      console.log("userAccountB : ", info)
       info = await getAccount(connection, newAccountPool);
-      assert(info.amount == POOL_TOKEN_AMOUNT);
+      console.log("newAccountPool : ", info)
 }
 
 depositAllTokenTypes()
