@@ -3,7 +3,8 @@ import {
       mintTo,
       getMint,
       getOrCreateAssociatedTokenAccount,
-      getAccount
+      getAccount,
+      
 } from '@solana/spl-token';
 import {
       clusterApiUrl,
@@ -17,7 +18,8 @@ import { getKeypairFromEnvironment, airdropIfRequired } from "@solana-developers
 
 // const payer = Keypair.generate();
 const payer = getKeypairFromEnvironment('SECRET_KEY')
-const mintAuthority = Keypair.generate();
+// const mintAuthority = Keypair.generate();
+const mintAuthority = payer;
 const freezeAuthority = Keypair.generate();
 
 const connection = new Connection(

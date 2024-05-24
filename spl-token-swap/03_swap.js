@@ -31,6 +31,7 @@ import {
       mintTo,
       AccountLayout,
       TOKEN_PROGRAM_ID,
+      NATIVE_MINT,
 } from '@solana/spl-token';
 import { assert, sleep } from "./99_utils.js";
 import {
@@ -101,6 +102,8 @@ export async function swap() {
             swapPayer,
       );
 
+      const swaper = swapPayer
+
       console.log("tokenSwap : ", tokenSwap)
 
       console.log('Creating swap token a account');
@@ -108,7 +111,7 @@ export async function swap() {
             connection,
             payer,
             mintA,
-            owner.publicKey,
+            swaper.publicKey,
             Keypair.generate(),
       );
 
@@ -123,7 +126,7 @@ export async function swap() {
             payer,
             userAccountA,
             userTransferAuthority.publicKey,
-            owner,
+            swaper,
             SWAP_AMOUNT_IN,
       );
 
@@ -135,7 +138,7 @@ export async function swap() {
             connection,
             payer,
             mintB,
-            owner.publicKey,
+            swaper.publicKey,
             Keypair.generate(),
       );
       const poolAccount = await createAccount(

@@ -11,6 +11,7 @@ import {
       getAccount,
       getMinimumBalanceForRentExemptAccount,
       TOKEN_PROGRAM_ID,
+      getOrCreateAssociatedTokenAccount
 } from '@solana/spl-token';
 import { OWNER_SWAP_FEE, printLog } from "./99_utils.js";
 import base58 from "bs58";
@@ -69,11 +70,25 @@ async function accountInfos() {
             swapPayer,
       );
 
-      printLog(payer, 'payer')
+      printLog(base58.encode(payer.secretKey), 'payer secret key')
+      printLog(payer.publicKey.toBase58(), 'payer pubkey')
 
       printLog(base58.encode(owner.secretKey), 'owner secret key')
       printLog(owner.publicKey.toBase58(), "owner pubkey")
       printLog(await connection.getBalance(owner.publicKey), "owner balance")
+      printLog(await getOrCreateAssociatedTokenAccount(
+            connection,
+            payer,
+            mintA.address,
+            owner.publicKey
+      ), "owner tokenA")
+      printLog(await getOrCreateAssociatedTokenAccount(
+            connection,
+            payer,
+            mintB.address,
+            owner.publicKey
+      ), "owner tokenB")
+
 
       printLog(base58.encode(swapPayer.secretKey), 'swapPayer secret key')
       printLog(swapPayer.publicKey.toBase58(), "swapPayer pubkey")

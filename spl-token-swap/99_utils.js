@@ -45,24 +45,27 @@ export const mintBProgramId = TOKEN_PROGRAM_ID;
 export const SWAP_PROGRAM_OWNER_FEE_ADDRESS = process.env.SWAP_PROGRAM_OWNER_FEE_ADDRESS;
 console.log("SWAP_PROGRAM_OWNER_FEE_ADDRESS : ", SWAP_PROGRAM_OWNER_FEE_ADDRESS)
 // Pool fees
-export const TRADING_FEE_NUMERATOR = 25n;
-export const TRADING_FEE_DENOMINATOR = 10000n;
-export const OWNER_TRADING_FEE_NUMERATOR = 5n;
-export const OWNER_TRADING_FEE_DENOMINATOR = 10000n;
+export const TRADING_FEE_NUMERATOR = 1n;
+export const TRADING_FEE_DENOMINATOR = 1_000_000n;
+
+// 문제 ...
+export const OWNER_TRADING_FEE_NUMERATOR = 1n;
+export const OWNER_TRADING_FEE_DENOMINATOR = 1_000_000n;
+
 export const OWNER_WITHDRAW_FEE_NUMERATOR = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 0n : 1n;
 export const OWNER_WITHDRAW_FEE_DENOMINATOR = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 0n : 6n;
-export const HOST_FEE_NUMERATOR = 20n;
+export const HOST_FEE_NUMERATOR = 1n;
 export const HOST_FEE_DENOMINATOR = 100n;
 
 // Initial amount in each swap token
-export let currentSwapTokenA = 10000000n;
-export let currentSwapTokenB = 1000000n;
+export let currentSwapTokenA = 10_000_000n;
+export let currentSwapTokenB = 10_000_000n;
 export let currentFeeAmount = 0n;
 
 // Swap instruction constants
 // Because there is no withdraw fee in the production version, these numbers
 // need to get slightly tweaked in the two cases.
-export const SWAP_AMOUNT_IN = 5000n;
+export const SWAP_AMOUNT_IN = 1_000_000n;
 export const SWAP_AMOUNT_OUT = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 90661n : 90674n;
 export const SWAP_FEE = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 22727n : 22730n;
 export const HOST_SWAP_FEE = SWAP_PROGRAM_OWNER_FEE_ADDRESS
