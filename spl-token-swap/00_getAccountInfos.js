@@ -13,6 +13,7 @@ import {
       TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import { printLog } from "./99_utils.js";
+import  bs58 from 'bs58';
 
 accountInfos()
 
@@ -69,9 +70,9 @@ async function accountInfos() {
       );
 
       printLog(payer, 'payer')
-      printLog(owner, 'owner')
+      printLog(bs58.encode(owner.secretKey), 'owner secrect key')
       printLog(owner.publicKey.toBase58(), "owner pubkey")
-      printLog(swapPayer, 'swapPayer')
+      printLog(bs58.encode(swapPayer.secretKey), 'swapPayer secrect key')
       printLog(swapPayer.publicKey.toBase58(), "swapPayer pubkey")
       printLog(tokenSwapAccount, 'tokenSwapAccount')
       printLog(tokenPool, 'tokenPool')

@@ -244,7 +244,7 @@ export async function depositAllTokenTypes() {
       await sendAndConfirmTransaction(
             connection,
             transaction,
-            [payer, userAccountA, owner],
+            [payer, userAccountB, owner],
             { skipPreflight: true }
       );
 
