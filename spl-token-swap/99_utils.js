@@ -45,16 +45,16 @@ export const mintBProgramId = TOKEN_PROGRAM_ID;
 export const SWAP_PROGRAM_OWNER_FEE_ADDRESS = process.env.SWAP_PROGRAM_OWNER_FEE_ADDRESS;
 console.log("SWAP_PROGRAM_OWNER_FEE_ADDRESS : ", SWAP_PROGRAM_OWNER_FEE_ADDRESS)
 // Pool fees
-export const TRADING_FEE_NUMERATOR = 1n;
+export const TRADING_FEE_NUMERATOR = 0n;
 export const TRADING_FEE_DENOMINATOR = 1_000_000n;
 
 // 문제 ...
-export const OWNER_TRADING_FEE_NUMERATOR = 1n;
+export const OWNER_TRADING_FEE_NUMERATOR = 0n;
 export const OWNER_TRADING_FEE_DENOMINATOR = 1_000_000n;
 
 export const OWNER_WITHDRAW_FEE_NUMERATOR = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 0n : 1n;
 export const OWNER_WITHDRAW_FEE_DENOMINATOR = SWAP_PROGRAM_OWNER_FEE_ADDRESS ? 0n : 6n;
-export const HOST_FEE_NUMERATOR = 1n;
+export const HOST_FEE_NUMERATOR = 0n;
 export const HOST_FEE_DENOMINATOR = 100n;
 
 // Initial amount in each swap token

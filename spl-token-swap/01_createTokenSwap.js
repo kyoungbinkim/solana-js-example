@@ -99,13 +99,14 @@ async function createTokenSwap(
       }
       else {
             console.log('creating pool mint');
+            const tokenPoolKeyPair = Keypair.generate();
             tokenPool = await createMint(
                   connection,
                   payer,
                   authority,
                   null,
                   2,
-                  Keypair.generate(),
+                  tokenPoolKeyPair,
                   undefined,
                   TOKEN_PROGRAM_ID,
             );
@@ -151,13 +152,15 @@ async function createTokenSwap(
       }
       else {
             console.log('creating token A');
+            const mintAKeyPair = Keypair.generate();
+            console.log('mintAKeyPair : ', mintAKeyPair);
             mintA = await createMint(
                   connection,
                   payer,
                   owner.publicKey,
                   null,
                   2,
-                  Keypair.generate(),
+                  mintAKeyPair,
                   undefined,
                   mintAProgramId,
             );
