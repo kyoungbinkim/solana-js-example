@@ -51,6 +51,9 @@ import { createMint } from '@solana/spl-token';
 import { createCreateMetadataAccountV3Instruction, PROGRAM_ID } from '@metaplex-foundation/mpl-token-metadata';
 
 
+
+
+
 const getRandomInt = (min, max) => { return Math.floor(Math.random() * (max - min)) + min; }
 
 const createTokenMetaData = async () => {
@@ -89,6 +92,15 @@ const createTokenMetaData = async () => {
     additionalMetadata: [["description", "TEST METADATA"]],
   };
   
+  const LGEmetadata = {
+    updateAuthority: updateAuthority.publicKey,
+    mint: mint,
+    tokenName: 'LG-HOME-APPLIANCE-tube',
+    symbol: 'LHA',
+    uri: "https://raw.githubusercontent.com/kyoungbinkim/solana-js-example/main/sol-dev-course/metadata/LGEMetaData.json",
+    additionalMetadata: [["description", "Carbon Credit for LG HOME APPLIANCE"]],
+  };
+
   const createMetadataInstruction = createCreateMetadataAccountV3Instruction(
     {
       metadata: PublicKey.findProgramAddressSync(
@@ -107,9 +119,9 @@ const createTokenMetaData = async () => {
     {
       createMetadataAccountArgsV3: {
         data: {
-          name: metaData.tokenName,
-          symbol: metaData.symbol,
-          uri: metaData.uri,
+          name: LGEmetadata.tokenName,
+          symbol: LGEmetadata.symbol,
+          uri: LGEmetadata.uri,
           creators: null,
           sellerFeeBasisPoints: 0,
           uses: null,

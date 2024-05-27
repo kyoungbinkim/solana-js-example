@@ -1,6 +1,6 @@
 {
     "name": "Kim-Kyoung-Bin-2",
-    "symbol": "KBIN-2",
+    "symbol": "KBIN",
     "description": "FOR METADATA TEST",
     "image": "https://raw.githubusercontent.com/kyoungbinkim/solana-js-example/main/sol-dev-course/metadata/test-2.png",
     "attributes": [
