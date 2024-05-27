@@ -2,7 +2,7 @@
     "name": "Kim-Kyoung-Bin-2",
     "symbol": "KBIN-2",
     "description": "FOR METADATA TEST",
-    "image": "https://raw.githubusercontent.com/solana-developers/opos-asset/main/assets/DeveloperPortal/image.png",
+    "image": "https://raw.githubusercontent.com/kyoungbinkim/solana-js-example/main/sol-dev-course/metadata/test-1.png",
     "attributes": [
       {
       }
