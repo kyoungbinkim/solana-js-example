@@ -1,0 +1,10 @@
+{
+      "name": "USDT (LP for LHA)",
+      "symbol": "USDT",
+      "description": "USDT (LP for LHA) is a stablecoin that is pegged to the US Dollar. It is a liquidity provider token for LHA.",
+      "image": "https://raw.githubusercontent.com/kyoungbinkim/solana-js-example/main/sol-dev-course/metadata/USDT_logo.png",
+      "attributes": [
+        {
+        }
+      ]
+}
