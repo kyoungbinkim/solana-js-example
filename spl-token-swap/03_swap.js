@@ -32,6 +32,7 @@ import {
       AccountLayout,
       TOKEN_PROGRAM_ID,
       NATIVE_MINT,
+      TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token';
 import { assert, sleep } from "./99_utils.js";
 import {
@@ -56,9 +57,11 @@ import {
       POOL_TOKEN_AMOUNT
 } from './99_utils.js'
 
-swap()
+swap(TOKEN_PROGRAM_ID)
 
-export async function swap() {
+export async function swap(
+      tokenProgramId=TOKEN_PROGRAM_ID
+) {
       const connection = new Connection(clusterApiUrl("devnet"), {commitment: "confirmed",});
       const payer = getKeypairFromEnvironment("SECRET_KEY");
       const owner = getKeypairFromEnvironment("OWNER_SECRET_KEY");
@@ -67,17 +70,23 @@ export async function swap() {
 
       const mintA = (await getMint(
             connection,
-            new PublicKey(process.env.TOKEN_A_ADDRESS)
+            new PublicKey(process.env.TOKEN_A_ADDRESS),
+            undefined,
+            tokenProgramId
       )).address
 
       const mintB = (await getMint(
             connection,
-            new PublicKey(process.env.TOKEN_B_ADDRESS)
+            new PublicKey(process.env.TOKEN_B_ADDRESS),
+            undefined,
+            tokenProgramId
       )).address
 
       const tokenPool = (await getMint(
             connection,
-            new PublicKey(process.env.TOKEN_POOL_MINT_ADDRESS)
+            new PublicKey(process.env.TOKEN_POOL_MINT_ADDRESS),
+            undefined,
+            tokenProgramId
       )).address
 
 
@@ -85,14 +94,14 @@ export async function swap() {
             connection,
             new PublicKey(process.env.TOKEN_A_ACCOUNT),
             undefined,
-            TOKEN_PROGRAM_ID
+            tokenProgramId
       )).address
 
       const tokenAccountB = (await getAccount(
             connection,
             new PublicKey(process.env.TOKEN_B_ACCOUNT),
             undefined,
-            TOKEN_PROGRAM_ID
+            tokenProgramId
       )).address
 
       const tokenSwap = await TokenSwap.loadTokenSwap(
@@ -103,8 +112,8 @@ export async function swap() {
       );
 
       const swaper = swapPayer
-
       console.log("tokenSwap : ", tokenSwap)
+      console.log("swaper : ", swaper.publicKey.toBase58())
 
       console.log('Creating swap token a account');
       const userAccountA = await createAccount(
@@ -113,11 +122,23 @@ export async function swap() {
             mintA,
             swaper.publicKey,
             Keypair.generate(),
+            undefined,
+            tokenProgramId
       );
 
       await sleep(500);
       console.log("mint to userAccountA"); 
-      await mintTo(connection, payer, mintA, userAccountA, owner, SWAP_AMOUNT_IN );
+      await mintTo(
+            connection,
+            payer, 
+            mintA, 
+            userAccountA, 
+            owner, 
+            SWAP_AMOUNT_IN,
+            undefined,
+            undefined,
+            tokenProgramId
+      );
       
       await sleep(500);
       const userTransferAuthority = Keypair.generate(); 
@@ -128,6 +149,9 @@ export async function swap() {
             userTransferAuthority.publicKey,
             swaper,
             SWAP_AMOUNT_IN,
+            undefined,
+            undefined,
+            tokenProgramId
       );
 
       console.log("userTransferAuthority : ", userTransferAuthority.publicKey.toBase58())
@@ -140,6 +164,9 @@ export async function swap() {
             mintB,
             swaper.publicKey,
             Keypair.generate(),
+            undefined,
+            undefined,
+            tokenProgramId
       );
       const poolAccount = await createAccount(
             connection,
@@ -147,6 +174,8 @@ export async function swap() {
             tokenPool,
             owner.publicKey,
             Keypair.generate(),
+            undefined,
+            tokenProgramId
       )
 
 
@@ -166,10 +195,10 @@ export async function swap() {
             userAccountB,
             // tokenSwap.mintA,
             // tokenSwap.mintB,
-            TOKEN_PROGRAM_ID,
-            TOKEN_PROGRAM_ID,
-            TOKEN_PROGRAM_ID,
-            TOKEN_PROGRAM_ID,
+            tokenProgramId,
+            tokenProgramId,
+            tokenProgramId,
+            tokenProgramId,
             poolAccount,
             userTransferAuthority,
             SWAP_AMOUNT_IN,
@@ -180,20 +209,19 @@ export async function swap() {
       await sleep(500);
 
       let info;
-      info = await getAccount(connection, userAccountA);
+      info = await getAccount(connection, userAccountA, undefined, tokenProgramId);
       console.log("userAccountA : ",info);
 
-      info = await getAccount(connection, userAccountB);
+      info = await getAccount(connection, userAccountB, undefined, tokenProgramId);
       console.log("userAccountB : ", info);
 
-      info = await getAccount(connection, tokenAccountA);
+      info = await getAccount(connection, tokenAccountA, undefined, tokenProgramId);
       console.log("tokenAccountA : ", info);
 
-      info = await getAccount(connection, tokenAccountB);
+      info = await getAccount(connection, tokenAccountB, undefined, tokenProgramId);
       console.log("tokenAccountB : ", info);
 
-      info = await getAccount(connection, poolAccount);
+      info = await getAccount(connection, poolAccount, undefined, tokenProgramId);
       console.log("poolAccount : ", info);
-      
 
 }

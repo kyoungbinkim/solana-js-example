@@ -54,14 +54,15 @@ const main = async () => {
       console.log('Run test: createTokenSwap (constant price)');
       const constantPrice = new Uint8Array(8);
       constantPrice[0] = 1;
-      await createTokenSwap(CurveType.ConstantProduct, undefined, false, false);
+      await createTokenSwap(CurveType.ConstantProduct, undefined, false, false, TOKEN_PROGRAM_ID);
 }
 
 async function createTokenSwap(
       curveType,
       curveParameters = undefined,
       skipCreate = true,
-      skipMint = true
+      skipMint = true,
+      tokenProgramId = TOKEN_PROGRAM_ID,
 ) {
       const connection = new Connection(clusterApiUrl("devnet"), {commitment: "confirmed",});
       let payer = getKeypairFromEnvironment("SECRET_KEY");
@@ -108,7 +109,7 @@ async function createTokenSwap(
                   2,
                   tokenPoolKeyPair,
                   undefined,
-                  TOKEN_PROGRAM_ID,
+                  tokenProgramId
             );
             console.log('creating pool account');
             tokenAccountPool = await createAccount(
@@ -116,16 +117,22 @@ async function createTokenSwap(
                   payer,
                   tokenPool,
                   owner.publicKey,
+                  // authority,
                   Keypair.generate(),
+                  undefined,
+                  tokenProgramId
             );
             console.log('creating fee account');
-            const ownerKey = owner.publicKey.toString();
+            const ownerKey = owner.publicKey.toBase58();
             feeAccount = await createAccount(
                   connection,
                   payer,
                   tokenPool,
                   new PublicKey(ownerKey),
+                  // authority,
                   Keypair.generate(),
+                  undefined,
+                  tokenProgramId
             );
       }
 
@@ -135,19 +142,20 @@ async function createTokenSwap(
 
       let mintA;
       let tokenAccountA;
-      const mintAProgramId = TOKEN_PROGRAM_ID;
       if (skipCreate) {
             console.log('getting token A account');
 
             mintA = (await getMint(
                   connection,
-                  new PublicKey(process.env.TOKEN_A_ADDRESS)
+                  new PublicKey(process.env.TOKEN_A_ADDRESS),
+                  undefined,
+                  tokenProgramId
             )).address
             tokenAccountA = (await getAccount(
                   connection,
                   new PublicKey(process.env.TOKEN_A_ACCOUNT),
                   undefined,
-                  TOKEN_PROGRAM_ID
+                  tokenProgramId
             )).address
       }
       else {
@@ -162,7 +170,7 @@ async function createTokenSwap(
                   2,
                   mintAKeyPair,
                   undefined,
-                  mintAProgramId,
+                  tokenProgramId,
             );
             console.log('creating token A account');
             tokenAccountA = await createAccount(
@@ -171,6 +179,8 @@ async function createTokenSwap(
                   mintA,
                   authority,
                   Keypair.generate(),
+                  undefined,
+                  tokenProgramId
             );
       }
 
@@ -184,6 +194,9 @@ async function createTokenSwap(
                   tokenAccountA,
                   owner,
                   currentSwapTokenA,
+                  undefined,
+                  undefined,
+                  tokenProgramId
             );
       }
 
@@ -193,19 +206,20 @@ async function createTokenSwap(
 
       let mintB;
       let tokenAccountB;
-      const mintBProgramId = TOKEN_PROGRAM_ID;
       if (skipCreate) {
             console.log('getting token B infos'); 
 
             mintB = (await getMint(
                   connection,
-                  new PublicKey(process.env.TOKEN_B_ADDRESS)
+                  new PublicKey(process.env.TOKEN_B_ADDRESS),
+                  undefined,
+                  tokenProgramId
             )).address
             tokenAccountB = (await getAccount(
                   connection,
                   new PublicKey(process.env.TOKEN_B_ACCOUNT),
                   undefined,
-                  TOKEN_PROGRAM_ID
+                  tokenProgramId
             )).address
       }
       else {
@@ -219,7 +233,7 @@ async function createTokenSwap(
                   2,
                   Keypair.generate(),
                   undefined,
-                  mintBProgramId,
+                  tokenProgramId,
             );
 
             console.log('creating token B account');
@@ -229,6 +243,8 @@ async function createTokenSwap(
                   mintB,
                   authority,
                   Keypair.generate(),
+                  undefined,
+                  tokenProgramId
             );
       }
 
@@ -245,6 +261,9 @@ async function createTokenSwap(
                   tokenAccountB,
                   owner,
                   currentSwapTokenB,
+                  undefined,
+                  undefined,
+                  tokenProgramId
             );
       }
 
@@ -264,10 +283,12 @@ async function createTokenSwap(
                   tokenPool,
                   mintA,
                   mintB,
+                  // tokenProgramId,
+                  // tokenProgramId,
                   feeAccount,
                   tokenAccountPool,
                   TOKEN_SWAP_PROGRAM_ID,
-                  TOKEN_PROGRAM_ID,
+                  tokenProgramId,
                   TRADING_FEE_NUMERATOR,
                   TRADING_FEE_DENOMINATOR,
                   OWNER_TRADING_FEE_NUMERATOR,
@@ -278,6 +299,7 @@ async function createTokenSwap(
                   HOST_FEE_DENOMINATOR,
                   curveType,
                   curveParameters,
+                  {skipPreflight: true}
             );
       }
 
